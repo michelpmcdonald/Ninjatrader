@@ -1,0 +1,190 @@
+// Tick(every single trade)  based session vwap
+
+#region Using declarations
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Xml.Serialization;
+using NinjaTrader.Cbi;
+using NinjaTrader.Gui;
+using NinjaTrader.Gui.Chart;
+using NinjaTrader.Gui.SuperDom;
+using NinjaTrader.Gui.Tools;
+using NinjaTrader.Data;
+using NinjaTrader.NinjaScript;
+using NinjaTrader.Core.FloatingPoint;
+using NinjaTrader.NinjaScript.DrawingTools;
+#endregion
+
+//This namespace holds Indicators in this folder and is required. Do not change it. 
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public class SessionVwap : Indicator
+	{
+		protected double totalDollars = 0;
+		protected double totalShares = 0;
+		protected SessionIterator sessionIterator;
+		
+		protected override void OnStateChange()
+		{
+			if (State == State.SetDefaults)
+			{
+				BarsRequiredToPlot 							= 0;
+				Description									= @"Session true VWAP.";
+				Name										= "SessionVwap";
+				Calculate									= Calculate.OnEachTick;
+				IsOverlay									= true;
+				DisplayInDataBox							= true;
+				DrawOnPricePanel							= true;
+				DrawHorizontalGridLines						= true;
+				DrawVerticalGridLines						= true;
+				PaintPriceMarkers							= false;
+				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
+				PrintDebug                                  = false;
+				AddPlot(Brushes.DarkTurquoise, "Vwap");
+				
+			}
+			
+			else if (State == State.DataLoaded)
+			{
+				sessionIterator = new SessionIterator(Bars);
+			}
+			
+			else if (State == State.Historical)
+			{
+				if (Calculate != Calculate.OnEachTick)
+					Draw.TextFixed(this, "NinjaScriptInfo", "Tick Data Required for VWAP", TextPosition.BottomRight);
+			}
+		}
+
+		protected override void OnBarUpdate()
+		{	
+		}
+		
+		protected override void OnMarketData(MarketDataEventArgs marketDataUpdate)
+		{
+			
+			// Workaround for market replay sending out all of replay sessions data(as historical data)
+			// Replay should only backfill history up to replay time, so make sure any historical ticks
+			// are before the current replay time.
+			if ( (Connection.PlaybackConnection != null) &&
+				(State == State.Historical) && 
+				(marketDataUpdate.Time >= Connection.PlaybackConnection.Now))
+			{
+				return;
+			}
+			
+			// Resset for every session
+			if (sessionIterator.IsNewSession(marketDataUpdate.Time, false))
+			{
+				if (PrintDebug)
+				{
+					Print("NewSession: " + marketDataUpdate.Time.ToString());
+				}
+				totalShares = 0;
+				totalDollars = 0;
+				sessionIterator.GetNextSession(marketDataUpdate.Time, false);
+			}
+			
+			// Check session time
+            if (!sessionIterator.IsInSession(marketDataUpdate.Time, false, true))
+			{
+				return;
+			}
+			
+			// TickReplay events only occur on the "Last" market data type
+  			if (marketDataUpdate.MarketDataType == MarketDataType.Last)
+			{
+				totalShares += marketDataUpdate.Volume;
+				totalDollars += marketDataUpdate.Volume * marketDataUpdate.Price;
+				Vwap[0] = totalDollars / totalShares;
+				if (PrintDebug)
+				{
+					Print(marketDataUpdate.Time.ToString() + " Session total shares: " +  totalShares.ToString() + " " + State);
+				}
+			}
+			
+		}
+
+		#region Properties
+		[NinjaScriptProperty]
+		[Display(Name="PrintDebug", Description="Print debug info ", Order=1, GroupName="Parameters")]
+		public bool PrintDebug
+		{ get; set; }
+		
+		
+		[Browsable(false)]
+		[XmlIgnore]
+		public Series<double> Vwap
+		{
+			get { return Values[0]; }
+		}
+		#endregion
+
+	}
+}
+
+#region NinjaScript generated code. Neither change nor remove.
+
+namespace NinjaTrader.NinjaScript.Indicators
+{
+	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
+	{
+		private SessionVwap[] cacheSessionVwap;
+		public SessionVwap SessionVwap(bool printDebug)
+		{
+			return SessionVwap(Input, printDebug);
+		}
+
+		public SessionVwap SessionVwap(ISeries<double> input, bool printDebug)
+		{
+			if (cacheSessionVwap != null)
+				for (int idx = 0; idx < cacheSessionVwap.Length; idx++)
+					if (cacheSessionVwap[idx] != null && cacheSessionVwap[idx].PrintDebug == printDebug && cacheSessionVwap[idx].EqualsInput(input))
+						return cacheSessionVwap[idx];
+			return CacheIndicator<SessionVwap>(new SessionVwap(){ PrintDebug = printDebug }, input, ref cacheSessionVwap);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
+{
+	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
+	{
+		public Indicators.SessionVwap SessionVwap(bool printDebug)
+		{
+			return indicator.SessionVwap(Input, printDebug);
+		}
+
+		public Indicators.SessionVwap SessionVwap(ISeries<double> input , bool printDebug)
+		{
+			return indicator.SessionVwap(input, printDebug);
+		}
+	}
+}
+
+namespace NinjaTrader.NinjaScript.Strategies
+{
+	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
+	{
+		public Indicators.SessionVwap SessionVwap(bool printDebug)
+		{
+			return indicator.SessionVwap(Input, printDebug);
+		}
+
+		public Indicators.SessionVwap SessionVwap(ISeries<double> input , bool printDebug)
+		{
+			return indicator.SessionVwap(input, printDebug);
+		}
+	}
+}
+
+#endregion
