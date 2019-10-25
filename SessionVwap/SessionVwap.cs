@@ -66,21 +66,21 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 		protected override void OnBarUpdate()
 		{
-			
 			// Set brush to Transparent on first tick of new session
 			// to disconnect indicator plot between sesions.  Plots are
 			// relative to current bar and last bar.
 			if (Bars.IsFirstBarOfSession && IsFirstTickOfBar)
 			{
-				curPlotBrush = PlotBrushes[0][0];	
 				PlotBrushes[0][0] = Brushes.Transparent;
 			}
-			// Set it back on first tick of second bar of session
-			else if (!Bars.IsFirstBarOfSession && curPlotBrush != null)
+			
+			// Draw line between start of session and first bar since the 
+			// plot is set to transparent for the session disconnect effect 
+			if (Bars.IsFirstBarOfSession)
 			{
-				PlotBrushes[0][0] = curPlotBrush;
-				curPlotBrush = null;
-			}
+				RemoveDrawObject(Time[0].Date.ToString() + "vwap_start");
+				Draw.Line(this, Time[0].Date.ToString() + "vwap_start", true, sessionIterator.ActualSessionBegin, Open[0], Time[0], Vwap[0], Plots[0].Brush, Plots[0].DashStyleHelper, (int)Plots[0].Pen.Thickness);		
+			}	
 		}
 		
 		protected override void OnMarketData(MarketDataEventArgs marketDataUpdate)
@@ -93,10 +93,17 @@ namespace NinjaTrader.NinjaScript.Indicators
 				(State == State.Historical) && 
 				(marketDataUpdate.Time >= Connection.PlaybackConnection.Now))
 			{
+				if (PrintDebug)
+				{
+					Print("Filter Hit - MarketDataEvent Time :" + marketDataUpdate.Time.ToString() + 
+						  " Playback Time: " + Connection.PlaybackConnection.Now.ToString() + 
+						  " Event Type: " + marketDataUpdate.MarketDataType + 
+						  " State: " + State);
+				}
 				return;
 			}
-			
-			// Resset for every session
+					
+			// Reset for every session
 			if (sessionIterator.IsNewSession(marketDataUpdate.Time, false))
 			{
 				if (PrintDebug)
@@ -114,7 +121,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				return;
 			}
 			
-			// TickReplay events only occur on the "Last" market data type
+			// Is this a trade(not bid or ask)
   			if (marketDataUpdate.MarketDataType == MarketDataType.Last)
 			{
 				totalShares += marketDataUpdate.Volume;
