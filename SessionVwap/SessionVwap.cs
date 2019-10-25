@@ -1,5 +1,3 @@
-// Tick(every single trade)  based session vwap
-
 #region Using declarations
 using System;
 using System.Collections.Generic;
@@ -32,6 +30,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 		protected double totalDollars = 0;
 		protected double totalShares = 0;
 		protected SessionIterator sessionIterator;
+		protected Brush curPlotBrush;
 		
 		protected override void OnStateChange()
 		{
@@ -49,8 +48,8 @@ namespace NinjaTrader.NinjaScript.Indicators
 				PaintPriceMarkers							= false;
 				ScaleJustification							= NinjaTrader.Gui.Chart.ScaleJustification.Right;
 				PrintDebug                                  = false;
+				curPlotBrush                                = null;
 				AddPlot(Brushes.DarkTurquoise, "Vwap");
-				
 			}
 			
 			else if (State == State.DataLoaded)
@@ -66,13 +65,28 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 
 		protected override void OnBarUpdate()
-		{	
+		{
+			
+			// Set brush to Transparent on first tick of new session
+			// to disconnect indicator plot between sesions.  Plots are
+			// relative to current bar and last bar.
+			if (Bars.IsFirstBarOfSession && IsFirstTickOfBar)
+			{
+				curPlotBrush = PlotBrushes[0][0];	
+				PlotBrushes[0][0] = Brushes.Transparent;
+			}
+			// Set it back on first tick of second bar of session
+			else if (!Bars.IsFirstBarOfSession && curPlotBrush != null)
+			{
+				PlotBrushes[0][0] = curPlotBrush;
+				curPlotBrush = null;
+			}
 		}
 		
 		protected override void OnMarketData(MarketDataEventArgs marketDataUpdate)
 		{
 			
-			// Workaround for market replay sending out all of replay sessions data(as historical data)
+			// Workaround for market replay backfilling all of replay sessions data(as historical data)
 			// Replay should only backfill history up to replay time, so make sure any historical ticks
 			// are before the current replay time.
 			if ( (Connection.PlaybackConnection != null) &&
