@@ -214,14 +214,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 		}
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Vp Bar Color", Order = 1, GroupName = "Parameters")]
 		public Brush VpBrush { get; set; }
-		[NinjaScriptProperty]
 		[Display(Name="PrintDebug", Description="Print debug info ", Order=1, GroupName="Parameters")]
 		public bool PrintDebug
 		{ get; set; }
 		
 		
-		
-		[NinjaScriptProperty]
 		[Display(Name="ValueArea", Description="Display Value Area Bar color ", Order=0, GroupName="ValueArea")]
 		public bool EnableValueArea
 		{ get; set; }
@@ -376,18 +373,18 @@ namespace NinjaTrader.NinjaScript.Indicators
 	public partial class Indicator : NinjaTrader.Gui.NinjaScript.IndicatorRenderBase
 	{
 		private SessionVolumeProfile[] cacheSessionVolumeProfile;
-		public SessionVolumeProfile SessionVolumeProfile(bool printDebug, bool enableValueArea)
+		public SessionVolumeProfile SessionVolumeProfile()
 		{
-			return SessionVolumeProfile(Input, printDebug, enableValueArea);
+			return SessionVolumeProfile(Input);
 		}
 
-		public SessionVolumeProfile SessionVolumeProfile(ISeries<double> input, bool printDebug, bool enableValueArea)
+		public SessionVolumeProfile SessionVolumeProfile(ISeries<double> input)
 		{
 			if (cacheSessionVolumeProfile != null)
 				for (int idx = 0; idx < cacheSessionVolumeProfile.Length; idx++)
-					if (cacheSessionVolumeProfile[idx] != null && cacheSessionVolumeProfile[idx].PrintDebug == printDebug && cacheSessionVolumeProfile[idx].EnableValueArea == enableValueArea && cacheSessionVolumeProfile[idx].EqualsInput(input))
+					if (cacheSessionVolumeProfile[idx] != null &&  cacheSessionVolumeProfile[idx].EqualsInput(input))
 						return cacheSessionVolumeProfile[idx];
-			return CacheIndicator<SessionVolumeProfile>(new SessionVolumeProfile(){ PrintDebug = printDebug, EnableValueArea = enableValueArea }, input, ref cacheSessionVolumeProfile);
+			return CacheIndicator<SessionVolumeProfile>(new SessionVolumeProfile(), input, ref cacheSessionVolumeProfile);
 		}
 	}
 }
@@ -396,14 +393,14 @@ namespace NinjaTrader.NinjaScript.MarketAnalyzerColumns
 {
 	public partial class MarketAnalyzerColumn : MarketAnalyzerColumnBase
 	{
-		public Indicators.SessionVolumeProfile SessionVolumeProfile(bool printDebug, bool enableValueArea)
+		public Indicators.SessionVolumeProfile SessionVolumeProfile()
 		{
-			return indicator.SessionVolumeProfile(Input, printDebug, enableValueArea);
+			return indicator.SessionVolumeProfile(Input);
 		}
 
-		public Indicators.SessionVolumeProfile SessionVolumeProfile(ISeries<double> input , bool printDebug, bool enableValueArea)
+		public Indicators.SessionVolumeProfile SessionVolumeProfile(ISeries<double> input )
 		{
-			return indicator.SessionVolumeProfile(input, printDebug, enableValueArea);
+			return indicator.SessionVolumeProfile(input);
 		}
 	}
 }
@@ -412,14 +409,14 @@ namespace NinjaTrader.NinjaScript.Strategies
 {
 	public partial class Strategy : NinjaTrader.Gui.NinjaScript.StrategyRenderBase
 	{
-		public Indicators.SessionVolumeProfile SessionVolumeProfile(bool printDebug, bool enableValueArea)
+		public Indicators.SessionVolumeProfile SessionVolumeProfile()
 		{
-			return indicator.SessionVolumeProfile(Input, printDebug, enableValueArea);
+			return indicator.SessionVolumeProfile(Input);
 		}
 
-		public Indicators.SessionVolumeProfile SessionVolumeProfile(ISeries<double> input , bool printDebug, bool enableValueArea)
+		public Indicators.SessionVolumeProfile SessionVolumeProfile(ISeries<double> input )
 		{
-			return indicator.SessionVolumeProfile(input, printDebug, enableValueArea);
+			return indicator.SessionVolumeProfile(input);
 		}
 	}
 }
