@@ -42,6 +42,9 @@ namespace NinjaTrader.NinjaScript.Indicators
 		private double askPrice;
 		private double bidPrice;
 		
+		// Drawing alpha
+		private double alpha;
+		
 		protected override void OnStateChange()
 		{
 			if (State == State.SetDefaults)
@@ -57,6 +60,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				EnableValueArea             = true;
 				VpBrush                     = Brushes.SlateGray;
 				VaBrush                     = Brushes.Black;
+				alpha                       = 50;
 				
 			}
 			else if (State == State.Configure)
@@ -157,7 +161,11 @@ namespace NinjaTrader.NinjaScript.Indicators
 			double	tickSize = Bars.Instrument.MasterInstrument.TickSize;
 			
 			SharpDX.Direct2D1.Brush barBrush = VpBrush.ToDxBrush(RenderTarget);
+			barBrush.Opacity =  (float)(alpha / 100.0);
+			
 			SharpDX.Direct2D1.Brush vaBrush  = VaBrush.ToDxBrush(RenderTarget);
+			vaBrush.Opacity =  (float)(alpha / 100.0);
+			
 			SharpDX.Direct2D1.Brush drawBrush;
 			
 			
@@ -217,6 +225,13 @@ namespace NinjaTrader.NinjaScript.Indicators
 		[Display(Name="PrintDebug", Description="Print debug info ", Order=1, GroupName="Parameters")]
 		public bool PrintDebug
 		{ get; set; }
+		[Range(0, 100)]
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Opacity", Order = 2, GroupName = "Parameters")]
+		public double Opacity
+		{
+			get { return alpha; }
+			set { alpha = Math.Max(1, value); }
+		}
 		
 		
 		[Display(Name="ValueArea", Description="Display Value Area Bar color ", Order=0, GroupName="ValueArea")]
