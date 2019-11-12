@@ -132,7 +132,6 @@ namespace NinjaTrader.NinjaScript.Indicators
 					Print(marketDataUpdate.Time.ToString() + " Session total shares: " +  totalShares.ToString() + " " + State);
 				}
 			}
-			
 		}
 
 		#region Properties
@@ -149,8 +148,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			get { return Values[0]; }
 		}
 		#endregion
-
-	}
+	} //End of Indicator
 }
 
 #region NinjaScript generated code. Neither change nor remove.
