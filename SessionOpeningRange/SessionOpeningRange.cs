@@ -47,7 +47,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 				BarsRequiredToPlot 							= 0;
 				Description									= @"High and low of first x seconds of day";
 				Name										= "SessionOpeningRange";
-				Calculate									= Calculate.OnEachTick;
+				Calculate									= Calculate.OnPriceChange;
 				IsOverlay									= true;
 				DisplayInDataBox							= true;
 				DrawOnPricePanel							= true;
@@ -74,6 +74,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 			{
 				sessionIterator = new SessionIterator(Bars);	
 			}
+			
 		}
 		
 		protected override void OnMarketData(MarketDataEventArgs marketDataUpdate)
@@ -127,6 +128,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 						orHigh = marketDataUpdate.Price;
 						orHighDateTime = marketDataUpdate.Time;
 						redrawHigh = true;
+						Values[0][0] = orHigh;
 					}
 					
 					redrawLow = false;
@@ -135,6 +137,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 						orLow = marketDataUpdate.Price;
 						orLowDateTime = marketDataUpdate.Time;
 						redrawLow = true;
+						Values[1][0] = orLow;
 					}
 					
 					if (redrawHigh) 
@@ -188,14 +191,29 @@ namespace NinjaTrader.NinjaScript.Indicators
 		public int CutoffSeconds
 		{ get; set; }
 		
+		[XmlIgnore]
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Color", Order = 1, GroupName = "Or High Style")]
 		public Brush HighBrush { get; set; }
+		
+		[Browsable(false)]
+		public string HighBrushSerialize
+		{
+			get { return Serialize.BrushToString(HighBrush); }
+  			set { HighBrush = Serialize.StringToBrush(value); }
+		}
 		
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Width", Order = 2, GroupName = "Or High Style")]
 		public int HighBrushWidth { get; set; }
 		
+		[XmlIgnore]
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Color", Order = 1, GroupName = "Or Low Style")]
 		public Brush LowBrush { get; set; }
+		[Browsable(false)]
+		public string LowBrushSerialize
+		{
+			get { return Serialize.BrushToString(LowBrush); }
+  			set { LowBrush = Serialize.StringToBrush(value); }
+		}
 		
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Width", Order = 2, GroupName = "Or Low Style")]
 		public int LowBrushWidth { get; set; }
