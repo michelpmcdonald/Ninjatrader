@@ -213,34 +213,55 @@ namespace NinjaTrader.NinjaScript.Indicators
 		
 		#region Properties
 		
+		// Vp chart width as a % of a session width
 		[Range(10, 100)]
-		[Display(ResourceType = typeof(Custom.Resource), Name = "SessionWidth", Order = 0, GroupName = "Parameters")]
+		[Display(ResourceType = typeof(Custom.Resource), Name = "SessionWidth", Order = 0, GroupName = "VP")]
 		public int SessionWidth
 		{
 			get { return sessionWidth; }
 			set { sessionWidth = value; }
 		}
-		[Display(ResourceType = typeof(Custom.Resource), Name = "Vp Bar Color", Order = 1, GroupName = "Parameters")]
+		
+		// Vp bar color
+		[XmlIgnore()]
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Vp Bar Color", Order = 1, GroupName = "VP")]
 		public Brush VpBrush { get; set; }
-		[Display(Name="PrintDebug", Description="Print debug info ", Order=1, GroupName="Parameters")]
-		public bool PrintDebug
-		{ get; set; }
+		[Browsable(false)]
+		public string VpBrushSerialize
+		{
+			get { return Serialize.BrushToString(VpBrush); }
+  			set { VpBrush = Serialize.StringToBrush(value); }
+		}
+		
+		// VP bar opacity
 		[Range(0, 100)]
-		[Display(ResourceType = typeof(Custom.Resource), Name = "Opacity", Order = 2, GroupName = "Parameters")]
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Opacity", Order = 2, GroupName = "VP")]
 		public double Opacity
 		{
 			get { return alpha; }
 			set { alpha = Math.Max(1, value); }
 		}
 		
-		
-		[Display(Name="ValueArea", Description="Display Value Area Bar color ", Order=0, GroupName="ValueArea")]
+		// Enable Value area coloring
+		[Display(Name="ValueArea", Description="Display Value Area Bar color ", Order=3, GroupName="VP")]
 		public bool EnableValueArea
 		{ get; set; }
-		[Display(ResourceType = typeof(Custom.Resource), Name = "Va Bar Color", Order = 1, GroupName = "ValueArea")]
+		
+		// Value Area bar color
+		[XmlIgnore()]
+		[Display(ResourceType = typeof(Custom.Resource), Name = "Va Bar Color", Order = 4, GroupName = "VP")]
 		public Brush VaBrush { get; set; }
+		[Browsable(false)]
+		public string VaBrushSerialize
+		{
+			get { return Serialize.BrushToString(VaBrush); }
+  			set { VaBrush = Serialize.StringToBrush(value); }
+		}
 		
-		
+		//Print Debug info
+		[Display(Name="PrintDebug", Description="Print debug info ", Order=0, GroupName="Parameters")]
+		public bool PrintDebug
+		{ get; set; }
 		#endregion
 		
 		#region Vol Profile Container
@@ -372,13 +393,7 @@ namespace NinjaTrader.NinjaScript.Indicators
 
 	#endregion
 		
-		
 	} //End of Indicator
-	
-
-	
-		
-		
 }
 
 #region NinjaScript generated code. Neither change nor remove.
