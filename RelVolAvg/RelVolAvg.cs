@@ -270,15 +270,44 @@ namespace NinjaTrader.NinjaScript.Indicators
 		{ get; set; }
 		
 		
-		// Volume Bar Properties
+		// Show-Hide raw volume bars
 		[Display(Name="Visible", Description="Show Volume Bars", Order=0, GroupName="Volume Bars")]
 		public bool ShowVolumeBars { get; set; }
+		
+		// Raw volume bar above std color
+		[XmlIgnore()]
 		[Display(Name="Above Std", Description="Volume that exceeds RelVol by 1 Standard Deviation", Order=1, GroupName="Volume Bars")]
 		public Brush VolAboveStdBrush { get; set; }
+		[Browsable(false)]
+		public string VolAboveStdBrushSerialize
+		{
+			get { return Serialize.BrushToString(VolAboveStdBrush); }
+  			set { VolAboveStdBrush = Serialize.StringToBrush(value); }
+		}
+		
+		// Raw volume within std color
+		[XmlIgnore()]
 		[Display(Name="Within Std", Description="Volume that is within 1 Standard Deviation of RelVol", Order=2, GroupName="Volume Bars")]
 		public Brush VolWithinStdBrush { get; set; }
+		[Browsable(false)]
+		public string VolWithinStdBrushSerialize
+		{
+			get { return Serialize.BrushToString(VolWithinStdBrush); }
+  			set { VolWithinStdBrush = Serialize.StringToBrush(value); }
+		}
+		
+		// Raw volume below std
+		[XmlIgnore()]
 		[Display(Name="Below Std", Description="Volume that is below 1 Standard Deviation of RelVol", Order=3, GroupName="Volume Bars")]
 		public Brush VolBelowStdBrush { get; set; }
+		[Browsable(false)]
+		public string VolBelowStdBrushSerialize
+		{
+			get { return Serialize.BrushToString(VolBelowStdBrush); }
+  			set { VolBelowStdBrush = Serialize.StringToBrush(value); }
+		}
+				
+		// Raw vol opacity
 		[Range(0, 100)]
 		[Display(ResourceType = typeof(Custom.Resource), Name = "Opacity", Order = 4, GroupName = "Volume Bars")]
 		public double VolAlpha
@@ -287,19 +316,46 @@ namespace NinjaTrader.NinjaScript.Indicators
 			set { volAlpha = Math.Max(1, value); }
 		}
 		
-		// Std range hi low hash marks
+		// Std range show-hide hi low hash marks
 		[Display(Name="Visible", Description="Show 1 Std Hi-Low Hashes", Order=0, GroupName="1 Std Hi-Low")]
 		public bool ShowStdHiLow { get; set; }
+		
+		// Std high range tick color
+		[XmlIgnore()]
 		[Display(Name="Std Hi", Description="Std High Mark", Order=1, GroupName="1 Std Hi-Low")]
 		public Brush StdHiBrush { get; set; }
+		[Browsable(false)]
+		public string StdHiBrushSerialize
+		{
+			get { return Serialize.BrushToString(StdHiBrush); }
+  			set { StdHiBrush = Serialize.StringToBrush(value); }
+		}
+		
+		// Std low range tick color
+		[XmlIgnore()]
 		[Display(Name="Std Low", Description="Std Low Mark", Order=2, GroupName="1 Std Hi-Low")]
 		public Brush StdLowBrush { get; set; }
+		[Browsable(false)]
+		public string StdLowBrushSerialize
+		{
+			get { return Serialize.BrushToString(StdLowBrush); }
+  			set { StdLowBrush = Serialize.StringToBrush(value); }
+		}
 		
-		// Avg rel vol
+		// Avg rel vol show hide
 		[Display(Name="Visible", Description="Show Average Rel Vol", Order=0, GroupName="Average Rel Volume")]
 		public bool ShowAvgRelVol { get; set; }
+		
+		// Avg rel vol color
+		[XmlIgnore()]
 		[Display(Name="Average Rel Vol", Description="Average Rel Vol Brush", Order=1, GroupName="Average Rel Volume")]
 		public Brush AvgRelVolBrush { get; set; }
+		[Browsable(false)]
+		public string AvgRelVolBrushSerialize
+		{
+			get { return Serialize.BrushToString(AvgRelVolBrush); }
+  			set { AvgRelVolBrush = Serialize.StringToBrush(value); }
+		}
 	
 		#endregion
 
