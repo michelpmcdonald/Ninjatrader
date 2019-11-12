@@ -10,3 +10,5 @@ SessionOpeningRange - Session’s Hi-Low opening range specified in seconds from
 SessionVwap – Session’s Volume Weighted Average Price calculated from trade ticks
 
 SessionVolProfile – Session's Volume for each price traded.  Value Area is included.
+
+RelativeVolume - Average volume at time period with Standard Deviation Marks.
