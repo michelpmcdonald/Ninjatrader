@@ -48,12 +48,24 @@ namespace NinjaTrader.NinjaScript.Indicators
 				IsSuspendedWhileInactive					= true;
 				AddPlot(Brushes.LightSeaGreen, "MidPoint");
 			}
-			else if (State == State.Configure)
-			{
-			}
+			
 			else if (State == State.DataLoaded)
 			{
 				sessionIterator = new SessionIterator(Bars);
+			}
+			
+			else if (State == State.Historical)
+			{
+				// Only calc on bar close for historical backfill to
+				// speed up processing
+				Calculate = Calculate.OnBarClose;
+			}
+			
+			else if (State == State.Transition)
+			{
+				// When changing to real time feed, calc and display
+				// indicator for each trade for real time indicator updates
+				Calculate = Calculate.OnPriceChange;
 			}
 		}
 
@@ -63,6 +75,12 @@ namespace NinjaTrader.NinjaScript.Indicators
 			if (sessionIterator.IsNewSession(Time[0], false))
 			{
 				sessionIterator.GetNextSession(Time[0], false);
+			}
+			
+			// Sometimes CurrentDayOHL is not initialized yet for new session.  IDKW
+			if(CurrentDayOHL().CurrentHigh[0] == 0 || CurrentDayOHL().CurrentLow[0] == 0)
+			{
+				return;
 			}
 			
 			MidPoint[0] = ((CurrentDayOHL().CurrentHigh[0] - CurrentDayOHL().CurrentLow[0]) / 2) + CurrentDayOHL().CurrentLow[0];
