@@ -5,7 +5,7 @@ Wide colored bars are bar's volume, color coded against average relative volume 
 #### Grey Bar - Within 1 standard deviation of average relative volume
 #### Blue Bar - 1 standard deviation below average relative volume
 
-#### White horizontal hask marks - +/- 1 standard deviation of relative volume average
+#### White horizontal hash marks - +/- 1 standard deviation of relative volume average
 #### White vertical line - average relative volume
 
 
