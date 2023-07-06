@@ -18,12 +18,9 @@ I have a few ideas on how to deal with a missing history bar...like for example:
 Just skip it, so if your relvol period is 5 days, and your missing day 3, just calc the average period volume for 4 days.
 Or average the bar before and the bar after the missing bar and use that for the missing bars volume.
 
-Here is a link to where I throw an exception for missing history, so that would be the spot in the code to start to deal with it if you want to give it a go:
-Ninjatrader/RelVolAvg/RelVolAvg.cs
+Here is a link to where I throw an exception for missing history, so that would be the spot in the code to start to deal with it if anyone wants to give it a go:
+https://github.com/michelpmcdonald/Ninjatrader/blob/caa3c217114bd6e8bc20b2229ed6ab62c8566fb4/RelVolAvg/RelVolAvg.cs#L211
 
-Line 211 in caa3c21
-
- // If the returned bar is not the expected date, a bar with the 
 
 ## Author
 
